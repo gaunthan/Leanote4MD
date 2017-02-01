@@ -16,6 +16,7 @@ from PIL import Image
 from StringIO import StringIO
 from requests_toolbelt import SSLAdapter
 import ssl
+import errno
 
 
 def is_ok(myjson):
@@ -194,8 +195,17 @@ def readFromFile(filename):
         return file_content, meta
 
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+
 def saveToFile(notes, noteBooks, path = '.'):
     unique_noteTitle = set()
+    
     for note in notes:
         if note['Title'] == '':
             filename = note['NoteId']
@@ -211,33 +221,37 @@ def saveToFile(notes, noteBooks, path = '.'):
             filename += '.md'
         else:
             filename += '.txt'
+        category = []
+        current_notebook = note['NotebookId']
+        category.append(noteBooks[current_notebook]['Title'])
+        while noteBooks[current_notebook]['ParentNotebookId'] != '':
+            category.append(noteBooks[noteBooks[current_notebook]['ParentNotebookId']]['Title'])
+            current_notebook = noteBooks[current_notebook]['ParentNotebookId']
+        category.reverse()  
+	
+        cate_path = path
+        for cat in category:
+            cat = cat.replace('/', '-') # 目录名不能包含字符'/'
+            cate_path = cate_path + '/' + cat
+			
+        mkdir_p(cate_path)
+
+        filename = filename.replace('/', '-') # 文件名不能包含字符'/'
+
         try:
-            with open(path + '/' + filename, 'w') as file:
+            with open(cate_path + '/' + filename, 'w') as file:
                 print 'write file: %s' %filename
                 file.write('title: %s\n' %note['Title'].encode('utf-8'))
-
 
                 date = dateutil.parser.parse(note['CreatedTime'])
                 file.write('date: %s\n' %datetime.strftime(date.astimezone(local_zone), '%Y/%m/%d %H:%M:%S'))
 
-                date = dateutil.parser.parse(note['UpdatedTime'])
-                file.write('updated: %s\n' %datetime.strftime(date.astimezone(local_zone), '%Y/%m/%d %H:%M:%S'))
-
                 if note['Tags']:
-                    if len(note['Tags']) == 1:
-                        if note['Tags'][0]:
-                            file.write('tags:\n')
-                            for tag in note['Tags']:
-                                file.write('- %s\n' %tag.encode('utf-8'))
+                    file.write('tags:\n')
+                    for tag in note['Tags']:
+                        file.write('- %s\n' %tag.encode('utf-8'))
 
-                category = []
-                current_notebook = note['NotebookId']
-                category.append(noteBooks[current_notebook]['Title'])
-                while noteBooks[current_notebook]['ParentNotebookId'] != '':
-                    category.append(noteBooks[noteBooks[current_notebook]['ParentNotebookId']]['Title'])
-                    current_notebook = noteBooks[current_notebook]['ParentNotebookId']
                 file.write('categories:\n')
-                category.reverse()
                 for cat in category:
                     file.write('- %s\n' %cat.encode('utf-8'))
 
@@ -245,13 +259,6 @@ def saveToFile(notes, noteBooks, path = '.'):
                 file.write('%s' %note['Content'].encode('utf-8'))
 
             file.close()
-            if note['Files']:
-                if len(note['Files']) > 0:
-                    for attach in note['Files']:
-                        if not attach['IsAttach']:
-                            i = getImage(attach['FileId'])
-                            print 'saving its image: %s.%s' %(attach['FileId'], i.format)
-                            i.save(attach['FileId'] + '.' + i.format)
 
         except:
             print "error: ", filename
