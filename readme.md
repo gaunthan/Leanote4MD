@@ -1,6 +1,6 @@
 title: Leanote导入导出MD工具
 date: 2015/04/01 15:43:41
-updated: 2015/04/01 15:48:15
+updated: 2017/02/01 16:46:15
 categories:
 - 代码
 tags:
@@ -8,6 +8,13 @@ tags:
 - Leanote
 
 ---
+
+# 说明
+基于原项目对export功能做了部分修改：
+
+- 修复tags导出功能
+- 笔记根据笔记本导出到相应目录中，若目录不存在则自动删除。
+
 #leanote导入导出MD工具
 - 可以把你储存在[Leanote](http://leanote.com)上的笔记、文章都导出成Markdown文件、文本文件
 - 也可以把你储存在硬盘的Markdown文件、文本文件都导入到[Leanote](http://leanote.com)上去
