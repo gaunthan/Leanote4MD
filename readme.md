@@ -1,28 +1,21 @@
-title: Leanote导入导出MD工具
-date: 2015/04/01 15:43:41
-updated: 2017/02/01 16:46:15
-categories:
-- 代码
-tags:
-- Python
-- Leanote
 
----
+# Leanote导入导出MD工具
 
-# 说明
+## 说明
 基于原项目对export功能做了部分修改：
 
 - 修复tags导出功能
 - 笔记根据笔记本导出到相应目录中，若目录不存在则自动删除
 - 移除图片导出功能
 
-# leanote导入导出MD工具
+以下是原文。
+## leanote导入导出MD工具
 - 可以把你储存在[Leanote](http://leanote.com)上的笔记、文章都导出成Markdown文件、文本文件
 - 也可以把你储存在硬盘的Markdown文件、文本文件都导入到[Leanote](http://leanote.com)上去
 - 目前支持导入导出含YAML格式的meta信息的文件，参照 [hexo](http://hexo.io/docs/front-matter.html)  的文件格式，也就是说文件头部可以有`title` `tags` `date` `categoris`等meta信息
 - 兼容官方网站，以及自建的服务器（基于beta4，以及API 0.1版本）
 
-# 如何使用
+## 如何使用
 - 首先安装Python2版本
 - 确保机器已经安装 `requests` `Pillow` `PyYaml` `requests_toolbelt` 等模块，如果没装请 `pip install`
 - 然后在命令行执行`python leanote4MD.py`
@@ -34,7 +27,7 @@ tags:
 - 一般导入的错误都是文件没有严格按照YAML格式（多余空格等）造成的解析错误
 
 
-# 功能
+## 功能
 
 - [x] 从Leanote导入、导出笔记本/子笔记本到MD或txt文本文件
 - [x] 保存为兼容 hexo front matter 的tag、category、date、title等
